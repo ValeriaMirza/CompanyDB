@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: company_db
+    environment:
+      POSTGRES_DB: corporate_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: company_app
+    depends_on:
+      - db
+    environment:
+      DJANGO_SETTINGS_MODULE: companyproject.settings
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    command: python insert_into_db/main.py
+
+volumes:
+  postgres_data:

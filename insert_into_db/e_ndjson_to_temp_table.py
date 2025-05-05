@@ -2,23 +2,16 @@
 import os
 import psycopg2
 import sys
+from db_utils import get_cursor, close_connection
 
 
 sys.stdout.reconfigure(encoding='utf-8')
 
-conn_info = {
-    'dbname':   'corporate_db',
-    'user':     'postgres',
-    'password': 'postgres',
-    'host':     'localhost',
-    'port':     5432
-}
 
 ndjson_dir = 'hojinjoho_ndjson'
 
 def main():
-    conn = psycopg2.connect(**conn_info)
-    cur  = conn.cursor()
+    conn, cur = get_cursor()
     cur.execute("""
         CREATE TABLE IF NOT EXISTS temp_hojinjoho (
             id   SERIAL PRIMARY KEY,
@@ -41,8 +34,7 @@ def main():
             conn.commit()
             print(f"[✔] Loaded {fname} ({sum(1 for _ in open(path, 'r', encoding='utf-8'))} rows)")
 
-    cur.close()
-    conn.close()
+    close_connection(conn, cur)
 
 if __name__ == '__main__':
     main()
